@@ -1,17 +1,5 @@
-<!doctype html>
-<html lang="en">
-<head>
-    <!-- Required meta tags -->
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-
-
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
-        integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
-
-    <title>LOGIN</title>
-</head>
-<body>
+{% extends 'header.html' %}
+{% block content %}
     <div class="mx-auto" style="width: 500px" ;>
         <form method="POST" class="form-horizontal">
             {% csrf_token%}
@@ -37,7 +25,4 @@
                 {% endfor %}
             </div>
         </form>
-
-
-</body>
-</html>
+{% endblock %}

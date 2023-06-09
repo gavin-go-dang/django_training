@@ -2,16 +2,46 @@ from django.shortcuts import render
 from django.contrib import messages
 from django.shortcuts import render, redirect
 from django.contrib.auth.models import User, auth
+from django.views import View
+from django.views.generic import View
+from django.contrib.auth.views import LoginView, LogoutView
 # Create your views here.
 
 
+class HomeView(View):
+    template_name = 'home.html'
+    def get(self, request):
+        return render(request, self.template_name)
 
-def home(request):
-    return render(request, 'home.html')
+
+class MyLogoutView(LogoutView):
+    next_page = 'home'
 
 
-def register(request):
-    if request.method == 'POST':
+class MyLoginView(LoginView):
+    template_name = 'login.html'
+    success_url = ''
+    def dispatch(self, request, *args, **kwargs):        
+        if request.user.is_authenticated:
+            return redirect('home')
+        return super().dispatch(request, *args, **kwargs)
+
+    def form_invalid(self, form):
+        messages.error(self.request, 'Invalid username or password')
+        return super().form_invalid(form)
+
+    def form_valid(self, form):
+        response = super().form_valid(form)
+        return redirect('home')
+
+
+class RegisterView(View):
+    template_name = 'registeration.html'
+
+    def get(self, request):
+        return render(request, self.template_name)
+    
+    def post(self, request):
         first_name = request.POST['first_name']
         last_name = request.POST['last_name']
         username = request.POST['username']
@@ -37,26 +67,3 @@ def register(request):
         else:
             messages.info(request, 'Both passwords are not matching')
             return redirect('register')
-    else:
-        return render(request, 'registeration.html')
-
-
-def login(request):
-    if request.method == 'POST':
-        username = request.POST['username']
-        password = request.POST['password']
-
-        user = auth.authenticate(username = username, password=password)
-
-        if user is not None:
-            auth.login(request, user)
-            return redirect('home')
-        else:
-            messages.info(request, 'Invalid Username or Password')
-            return redirect('login')        
-    else:
-        return render(request, 'login.html')
-
-def logout(request):
-    auth.logout(request)
-    return redirect('home')
