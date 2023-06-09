@@ -10,9 +10,7 @@ from django.contrib.auth.views import LoginView, LogoutView
 
 class HomeView(TemplateView):
     template_name = 'home.html'
-    def get(self, request):
-        return render(request, self.template_name)
-
+    
 
 class MyLogoutView(LogoutView):
     next_page = 'home'
