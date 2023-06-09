@@ -3,12 +3,12 @@ from django.contrib import messages
 from django.shortcuts import render, redirect
 from django.contrib.auth.models import User, auth
 from django.views import View
-from django.views.generic import View
+from django.views.generic import View, TemplateView
 from django.contrib.auth.views import LoginView, LogoutView
 # Create your views here.
 
 
-class HomeView(View):
+class HomeView(TemplateView):
     template_name = 'home.html'
     def get(self, request):
         return render(request, self.template_name)
@@ -52,7 +52,7 @@ class RegisterView(View):
         if password == confirm_password:
             if User.objects.filter(username = username):
                 messages.info(request, 'Your name has existed')
-                return redirect(register)
+                return redirect('register')
             
             elif User.objects.filter(email = email):
                 messages.info(request, 'Your email has been used')
