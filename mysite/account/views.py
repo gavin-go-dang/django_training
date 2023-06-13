@@ -5,6 +5,7 @@ from django.contrib.auth.models import User, auth
 from django.views import View
 from django.views.generic import View, TemplateView
 from django.contrib.auth.views import LoginView, LogoutView
+from .models import CustomUser
 # Create your views here.
 
 
@@ -48,17 +49,17 @@ class RegisterView(View):
         confirm_password = request.POST['confirm_password']
 
         if password == confirm_password:
-            if User.objects.filter(username = username):
+            if CustomUser.objects.filter(username = username):
                 messages.info(request, 'Your name has existed')
                 return redirect('register')
             
-            elif User.objects.filter(email = email):
+            elif CustomUser.objects.filter(email = email):
                 messages.info(request, 'Your email has been used')
 
                 return redirect(register)
             
             else:
-                user = User.objects.create_user(username=username, password=password, 
+                user = CustomUser.objects.create_user(username=username, password=password, 
                                                 email=email, first_name=first_name, last_name=last_name)
                 user.save()
                 return redirect('login')
