@@ -1,25 +1,23 @@
 from django.db import models
-
 # Create your models here.
 
+
 class Shops(models.Model):
-    shop_id = models.BigAutoField(primary_key = True)
-    shop_name = models.TextField(max_length = 50, null = False, blank = False)
-    address = models.TextField(max_length = 256, null = False, blank = False)
-    phone = models.TextField(max_length = 15, null = False, blank = False)
+    shop_name = models.CharField(max_length = 50)
+    address = models.TextField(max_length = 256)
+    phone = models.TextField(max_length = 15)
 
     def __str__ (self):
         return self.shop_name
 
 
 class Items(models.Model):
-    item_id = models.BigAutoField(primary_key = True)
-    item_name = models.TextField(max_length = 256, null = False, blank = False)
-    price = models.IntegerField(default = 0, null = False, blank = False)
+    item_name = models.CharField(max_length = 50)
+    price = models.IntegerField(default = 0)
     stocking_status = models.BooleanField(default = False)
-    unit = models.TextField(max_length = 50, null = False, blank = False)
+    unit = models.CharField(max_length = 50)
     shop = models.ForeignKey(to = Shops, on_delete = models.CASCADE)
-    rate = models.FloatField(default = 0, null = False, blank = False)
+    rate = models.FloatField(default = 0)
 
     def __str__ (self):
         return self.item_name
@@ -28,11 +26,10 @@ class Items(models.Model):
 
 class Customers(models.Model):
     gender_choice = ((0, 'Female'), (1, 'Male'), (2, 'Other'))
-    cust_id = models.BigAutoField(primary_key = True)
-    cust_name = models.TextField(max_length = 50, null = False, blank = False)
-    phone = models.TextField(max_length = 15, null = False, blank = False)
-    address = models.TextField(max_length = 256, null = False, blank = False)
-    birthday = models.DateField(default= '1/1/2000', null = True, blank = True)
+    cust_name = models.CharField(max_length = 50)
+    phone = models.CharField(max_length = 15)
+    address = models.TextField(max_length = 256)
+    birthday = models.DateField(null = True, blank = True)
     gender = models.CharField(gender_choice, max_length=10)
 
     def __str__ (self):
@@ -41,10 +38,9 @@ class Customers(models.Model):
 
 
 class TransferServices(models.Model):
-    transfer_id = models.BigAutoField(primary_key = True)
-    company_name = models.TextField(max_length = 50, null = False, blank = False)
-    phone = models.TextField(max_length = 15, null = False, blank = False)
-    address = models.TextField(max_length = 256, null = False, blank = False)
+    company_name = models.CharField(max_length = 50)
+    phone = models.CharField(max_length = 15)
+    address = models.CharField(max_length =100)
 
     def __str__ (self):
         return self.company_name
@@ -52,33 +48,24 @@ class TransferServices(models.Model):
 
 
 class Orders(models.Model):
-    order_id = models.BigAutoField(primary_key = True)
-    customer = models.ForeignKey(to = Customers, on_delete = models.CASCADE, null = False, blank = False)
-    date_create = models.DateField(auto_now_add = True, null = False, blank = False)
-    discount = models.FloatField(default = 0, null = False, blank = False)
+    customer = models.ForeignKey(to = Customers, on_delete = models.CASCADE)
+    date_create = models.DateField(auto_now_add = True)
+    discount = models.FloatField(default = 0)
 
-    def __str__ (self):
-        return self.order_id
 
 
 
 class OrderDetail(models.Model):
-    detail_id = models.BigAutoField(primary_key = True)
-    order_id = models.ForeignKey(to = Orders, on_delete = models.CASCADE, null = False, blank = False)
-    item_id = models.ForeignKey(to = Items, on_delete = models.CASCADE, null = False, blank = False)
-    quantity = models.IntegerField(default = 0, null = False, blank = False)
+    order_id = models.ForeignKey(to = Orders, on_delete = models.CASCADE)
+    item_id = models.ForeignKey(to = Items, on_delete = models.CASCADE)
+    quantity = models.IntegerField(default = 0)
 
-    def __str__ (self):
-        return self.detail_id
-
+    def __str__(self):
+        return str(self.order_id)
     
 
 class Shippings(models.Model):
-    shipping_id = models.BigAutoField(primary_key = True)
-    order = models.ForeignKey(to = Orders, on_delete = models.CASCADE, null = False, blank = False)
-    estimate_time = models.IntegerField(default = 1, null = False, blank = False)
-    shipper_name =  models.TextField(max_length = 256, null = False, blank = False)
+    order = models.ForeignKey(to = Orders, on_delete = models.CASCADE)
+    estimate_time = models.IntegerField(default = 1)
+    shipper_name =  models.CharField(max_length = 50)
     transfer_company = models.ForeignKey(to = TransferServices, on_delete = models.CASCADE)
-
-    def __str__ (self):
-        return self.shipping_id

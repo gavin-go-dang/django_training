@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+{% block content %}
+
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <a class="navbar-brand" href="">Demo login logout register</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
+      aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav">
+        <li class="nav-item active">
+          <a class="nav-link" href="">HOME<span class="sr-only">(current)</span></a>
+        </li>
+        {% if user.is_authenticated %}
+        <li class="nav-item">
+          <a class="nav-link" href="#">Hi, {{user.username}}</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="logout">LOGOUT</a>
+        </li>
+        {% else %}
+        <li class="nav-item">
+          <a class="nav-link" href="register">SIGN UP</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="login">LOGIN</a>
+        </li>
+        {% endif %}
+      </ul>
+    </div>
+  </nav>
+
+  <div class="container my-3">
+    <h1 style="text-align:center;">List customers</h1>
+  </div>
+  <div class="container my-3" style="padding-top: 5%;">
+    {% for cust in cust_list %}
+    <h4 style="text-align:center;"> {{ cust.cust_name }} <br></h4>
+    {% endfor %}
+  </div>
+{% endblock %}
