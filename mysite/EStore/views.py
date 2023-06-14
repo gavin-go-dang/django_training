@@ -6,48 +6,57 @@ from django.contrib.auth.models import User, auth
 from django.views import View
 from django.views.generic import View, TemplateView
 from django.db.models import Count,Sum, Max, Min
-from .models import Customers, Orders, OrderDetail, Shippings, Shops, TransferServices, Items
-# Create your views here.
 
+
+from .models import Customers, Items, OrderDetail, Orders, Shippings, TransferServices, Shops
 
 class ListUser(TemplateView):
-    def get(self, request):
+    template_name = 'list_user.html'
+
+    def get_context_data(self, **kwargs):
         cust_list = Customers.objects.all()
         context  = {'cust_list' : cust_list}
-        return render(request, 'list_user.html', context)
+        return context
+
 
 
 class SumCostPerUser(TemplateView):
-    def get(self, request):
-        transaction_data = OrderDetail.objects.select_related('order_id').select_related('item_id').select_related('order_id__customer')
+    template_name = 'sum_cost_per_cust.html'
+
+    def get_context_data(self, **kwargs):
+        transaction_data = OrderDetail.objects.select_related('order_id', 'item_id', 'order_id__customer')
 
         sum_list = []
-        list_customer = [str(order.order_id.customer) for order in transaction_data]
+        list_customer = [order.order_id.customer for order in transaction_data]
 
- 
+
         sum_cost = {key: 0 for key in list_customer}
         for record in transaction_data:
-            sum_cost[record.order_id.customer.cust_name] += record.quantity * record.item_id.price * (1 - record.order_id.discount)
+            sum_cost[record.order_id.customer] += record.quantity * record.item_id.price * (1 - record.order_id.discount)
         context = {'sum_cost' : sum_cost}
-        return render(request, 'sum_cost_per_cust.html', context)
+
+        return context
 
 
 class FrequenceSell(TemplateView):
-    def get(self, request):
+    template_name = 'frequence_sell.html'
+
+    def get_context_data(self, **kwargs):
         order_item = OrderDetail.objects.all().select_related('item_id')
         item_sell_aggregate = order_item.values('item_id__item_name').annotate(count= Count('quantity'))
         print(item_sell_aggregate)
         context = {'fre_item_list' : item_sell_aggregate}
         
-        return render(request, 'frequence_sell.html', context)
+        return context
 
 
 
 class CheapestItem(TemplateView):
-    def get(self, request):
+    template_name = 'cheapest_item.html'
+    def get_context_data(self):
         min_price = Items.objects.all().aggregate(Min('price'))['price__min']
         cheapest_item = Items.objects.filter(price = min_price)
         context = {'cheapest_item' : cheapest_item, 'cheapest_price':min_price}
+        return context
 
-        return render(request, 'cheapest_item.html', context)
 
