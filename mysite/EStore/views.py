@@ -52,7 +52,7 @@ class CheapestItem(TemplateView):
     template_name = 'cheapest_item.html'
     def get_context_data(self):
         min_price = Items.objects.all().aggregate(Min('price'))['price__min']
-        cheapest_item = Items.objects.filter(price = min_price)
+        cheapest_item = Items.objects.filter(price=min_price)
         context = {'cheapest_item' : cheapest_item, 'cheapest_price':min_price}
         return context
 
