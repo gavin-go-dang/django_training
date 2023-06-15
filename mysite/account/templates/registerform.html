@@ -8,7 +8,6 @@
 <body>
   <h2>Sign up</h2>
   
-  {% csrf_token %}
   <form method="POST">
     {% csrf_token %}
     {{ form.as_p }}

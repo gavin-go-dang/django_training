@@ -54,11 +54,11 @@ class RegisterView(View):
         confirm_password = request.POST['confirm_password']
 
         if password == confirm_password:
-            if CustomUser.objects.filter(username = username):
+            if CustomUser.objects.filter(username=username):
                 messages.info(request, 'Your name has existed')
                 return redirect('register')
             
-            elif CustomUser.objects.filter(email = email):
+            elif CustomUser.objects.filter(email=email):
                 messages.info(request, 'Your email has been used')
 
                 return redirect(register)

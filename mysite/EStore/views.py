@@ -7,7 +7,6 @@ from django.views import View
 from django.views.generic import View, TemplateView
 from django.db.models import Count,Sum, Max, Min
 
-
 from .models import Customers, Items, OrderDetail, Orders, Shippings, TransferServices, Shops
 
 class ListUser(TemplateView):
@@ -17,7 +16,6 @@ class ListUser(TemplateView):
         cust_list = Customers.objects.all()
         context  = {'cust_list' : cust_list}
         return context
-
 
 
 class SumCostPerUser(TemplateView):
@@ -48,7 +46,6 @@ class FrequenceSell(TemplateView):
         context = {'fre_item_list' : item_sell_aggregate}
         
         return context
-
 
 
 class CheapestItem(TemplateView):

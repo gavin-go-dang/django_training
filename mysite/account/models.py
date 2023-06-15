@@ -12,3 +12,4 @@ class CustomUser(AbstractUser):
         related_query_name='customuser',
     )
     is_api = models.BooleanField(default=False)
+

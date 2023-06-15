@@ -1,5 +1,6 @@
 from django import forms
 from .models import CustomUser
+
 class SignUpForm(forms.Form):
     username = forms.CharField(max_length=30)
     first_name = forms.CharField(max_length=30)
@@ -7,7 +8,6 @@ class SignUpForm(forms.Form):
     email = forms.EmailField()
     password1 = forms.CharField(widget=forms.PasswordInput)
     password2 = forms.CharField(widget=forms.PasswordInput)
-
 
 
     def clean(self):
@@ -27,13 +27,13 @@ class SignUpForm(forms.Form):
             raise forms.ValidationError("email is exist")
 
 
-
 class RegisterMetaForm(forms.ModelForm):
     password2 = forms.CharField(widget=forms.PasswordInput)
+
     class Meta:
         model = CustomUser
         fields = [ 'username', 'first_name', 'last_name', 'email', 'password', 'password2']
-
+        
 
     def clean(self):
         cleaned_data = super().clean()
