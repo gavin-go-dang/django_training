@@ -6,8 +6,15 @@ from django.contrib.auth.models import User, auth
 from django.views import View
 from django.views.generic import View, TemplateView
 from django.db.models import Count,Sum, Max, Min
+from rest_framework import viewsets
+from rest_framework.views import APIView
+from django.http import JsonResponse
+from rest_framework.response import Response
+from rest_framework.views import APIView
+from rest_framework.renderers import JSONRenderer
 
 from .models import Customers, Items, OrderDetail, Orders, Shippings, TransferServices, Shops
+from .serializers import CustomerSerializer, CheapestItemsSerializer, CostPerCustomerSerializer
 
 class ListUser(TemplateView):
     template_name = 'list_user.html'
@@ -26,7 +33,6 @@ class SumCostPerUser(TemplateView):
 
         sum_list = []
         list_customer = [order.order_id.customer for order in transaction_data]
-
 
         sum_cost = {key: 0 for key in list_customer}
         for record in transaction_data:
@@ -56,4 +62,37 @@ class CheapestItem(TemplateView):
         context = {'cheapest_item' : cheapest_item, 'cheapest_price':min_price}
         return context
 
+
+class CustomerViewSet(viewsets.ModelViewSet):
+    queryset = Customers.objects.all()
+    serializer_class = CustomerSerializer
+
+
+class CheapestItemViewSet(viewsets.ModelViewSet):
+    min_price = Items.objects.all().aggregate(Min('price'))['price__min']
+    queryset = Items.objects.filter(price=min_price)
+    serializer_class = CheapestItemsSerializer
+
+
+class CostPerCustomerViewSet(APIView):
+    renderer_classes = [JSONRenderer]
+    def get(self, request, format=None):
+        transaction_data = OrderDetail.objects.select_related('order_id', 'item_id', 'order_id__customer')
+        sum_list = []
+        list_customer = [order.order_id.customer.cust_name for order in transaction_data]
+
+        sum_cost = {key: 0 for key in list_customer}
+        for record in transaction_data:
+            sum_cost[record.order_id.customer.cust_name] += record.quantity * record.item_id.price * (1 - record.order_id.discount)
+
+        for key, value in sum_cost.items():
+            sum_list.append(
+                {
+                    'username':key,
+                    'cost':value
+                }
+            )
+
+        context = {'context':sum_list}
+        return Response(context)
 
