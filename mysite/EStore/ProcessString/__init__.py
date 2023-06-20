@@ -1,0 +1,1 @@
+from .noAccent import no_accent_vietnamese
