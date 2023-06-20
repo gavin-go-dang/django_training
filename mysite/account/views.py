@@ -6,7 +6,17 @@ from django.views import View
 from django.views.generic import View, TemplateView
 from django.contrib.auth.views import LoginView, LogoutView
 from .models import CustomUser
+from rest_framework.generics import GenericAPIView, RetrieveUpdateAPIView
+from rest_framework import viewsets, status
+from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.response import Response
+from django.contrib.auth import get_user_model
+
+from .serializers import CustomUserSerializer, UserLoginSerializer, UserRegisterationSerializer
 from .forms import SignUpForm, RegisterMetaForm
+
+
 # Create your views here.
 
 
@@ -116,3 +126,44 @@ class RegisterMetaFormView(View):
         if request.user.is_authenticated:
             return redirect('home')
         return render(request, 'registerform.html')
+
+
+class CustomUserViewSet(viewsets.ModelViewSet):
+    queryset = CustomUser.objects.all()
+    serializer_class = CustomUserSerializer
+
+User = get_user_model()
+
+
+class UserLoginAPIView(GenericAPIView):
+
+    permission_classes = (AllowAny,)
+    serializer_class = UserLoginSerializer
+
+    def post(self, request):
+            serializer = self.get_serializer(data=request.data)
+            serializer.is_valid(raise_exception=True)
+            serializer_context = {
+            'request': request,
+        }
+            user = serializer.validated_data
+            serializer = CustomUserSerializer(user, context=serializer_context)
+            token = RefreshToken.for_user(user)
+            data = serializer.data
+            data["tokens"] = {"refresh": str(token), "access": str(token.access_token)}
+            return redirect('home')
+
+
+class UserRegisterationAPIView(GenericAPIView):
+    permission_classes = (AllowAny,)
+    serializer_class = UserRegisterationSerializer
+
+
+    def post(self, request):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        user = serializer.save()
+        token = RefreshToken.for_user(user)
+        data = serializer.data
+        data["tokens"] = {"refresh": str(token), "access": str(token.access_token)}
+        return redirect()

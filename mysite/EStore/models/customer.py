@@ -12,3 +12,6 @@ class Customers(models.Model):
 
     def __str__ (self):
         return self.cust_name
+
+    def get_first_name(self):
+        return self.cust_name.split()[-1]
